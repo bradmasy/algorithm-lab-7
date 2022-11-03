@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Graph {
@@ -98,7 +99,6 @@ public class Graph {
 
     public int traverseNodes(int vertex, ArrayList<Integer> visitedNodes) {
         int tempVertex;
-        //System.out.println("Visiting Vertex: " + vertex);
 
         if (this.adjacencyMatrix.length == 1) {
             visitedNodes.add(vertex);
@@ -115,7 +115,7 @@ public class Graph {
                 tempVertex = i;
                 if (!visitedNodes.contains(tempVertex)) {
 
-                    if(!visitedNodes.contains(vertex)){
+                    if (!visitedNodes.contains(vertex)) {
                         System.out.println("Visiting Vertex: " + vertex);
 
                         visitedNodes.add(vertex);
@@ -126,7 +126,7 @@ public class Graph {
             } else {
                 // this constitutes there are no more options.
                 if (i == adjacencyMatrix[vertex].length - 1) {
-                    if(!visitedNodes.contains(vertex)){
+                    if (!visitedNodes.contains(vertex)) {
                         System.out.println("Visiting Vertex: " + vertex);
                         visitedNodes.add(vertex);
                     }
@@ -151,28 +151,64 @@ public class Graph {
 
     }
 
+
+    public void BFS(){
+        int startingVertexIndex = 0;
+        int visited = -1;
+
+        ArrayList<Integer> visitedNodes = new ArrayList<>();
+        ArrayList<Integer> stack        = new ArrayList<>();
+        visitedNodes.add(startingVertexIndex);
+
+        while (visited != startingVertexIndex) {
+            visited = traverseNodesBFS(startingVertexIndex, visitedNodes, stack);
+        }
+    }
+
+    private int traverseNodesBFS(int vertex, ArrayList<Integer> visitedNodes, ArrayList<Integer> stack) {
+
+        if (this.adjacencyMatrix.length == 1) {
+            visitedNodes.add(vertex);
+            return vertex;
+        }
+
+        if (stack.size() == this.adjacencyMatrix.length) {
+            return vertex;
+        }
+
+        for(int i = 0; i < adjacencyMatrix.length; i++){
+            if(adjacencyMatrix[vertex][i] == 1){
+                visitedNodes.add(i);
+            }
+        }
+
+        if(!stack.contains(vertex)) {
+            stack.add(vertex);
+            System.out.println("Visiting: " + stack.get(stack.size()-1));
+
+        }
+        visitedNodes.remove(0);
+        vertex = visitedNodes.get(0);
+
+        return traverseNodesBFS(vertex,visitedNodes,stack);
+    }
+
     public static void main(final String[] args) {
 
-//        Graph graph = new Graph(5);
-//        graph.setDirection(true);
-//        graph.addEdge(0,0);
-//        graph.addEdge(4,0);
-//        graph.addEdge(2,1);
-//        graph.addEdge(4,1);
-//        graph.addEdge(0,2);
-//        graph.addEdge(1,3);
-//        graph.addEdge(2,3);
-//        graph.addEdge(3,2);
-//        graph.addEdge(3,4);
-//        System.out.println(graph);
+        Graph gr = new Graph(5);
+        gr.setDirection(true);
+        gr.addEdge(0, 0);
+        gr.addEdge(4, 0);
+        gr.addEdge(2, 1);
+        gr.addEdge(4, 1);
+        gr.addEdge(0, 2);
+        gr.addEdge(1, 3);
+        gr.addEdge(2, 3);
+        gr.addEdge(3, 2);
+        gr.addEdge(3, 4);
+        System.out.println(gr);
 
-
-//      //  System.out.println("\n");
-//        System.out.println(graph.degree(2));
-//
-//        System.out.println(graph.inDegree(2));
-//        System.out.println(graph.outDegree(4));
-//          graph.DFS();
+        gr.BFS();
         System.out.println("\n");
 
 
@@ -190,6 +226,40 @@ public class Graph {
 
         System.out.println(G);
         G.DFS();
+        G.BFS();
+
+
+        Graph graph = new Graph(8);
+        graph.setDirection(true);
+
+        graph.addEdge(0, 1);
+        graph.addEdge(0, 2);
+        graph.addEdge(0, 4);
+        graph.addEdge(1, 0);
+        graph.addEdge(1, 3);
+        graph.addEdge(1, 5);
+        graph.addEdge(2, 0);
+        graph.addEdge(2, 3);
+        graph.addEdge(2, 6);
+        graph.addEdge(3, 1);
+        graph.addEdge(3, 2);
+        graph.addEdge(3, 7);
+        graph.addEdge(4, 0);
+        graph.addEdge(4, 5);
+        graph.addEdge(4, 6);
+        graph.addEdge(5, 1);
+        graph.addEdge(5, 4);
+        graph.addEdge(5, 7);
+        graph.addEdge(6, 2);
+        graph.addEdge(6, 4);
+        graph.addEdge(6, 7);
+        graph.addEdge(7, 3);
+        graph.addEdge(7, 5);
+        graph.addEdge(7, 6);
+
+        System.out.println(graph);
+
+        graph.BFS();
 
 
     }
