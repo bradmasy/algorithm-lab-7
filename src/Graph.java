@@ -16,6 +16,7 @@
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Graph {
 
@@ -135,10 +136,22 @@ public class Graph {
      */
     int inDegree(int v) {
         int degree = 0;
-        for (int[] eachRow : adjacencyMatrix) {
-            if (eachRow[v] == 1) {
-                degree++;
+
+        if(directed){
+            int[] vertexRow = adjacencyMatrix[v];
+
+            for(int eachCell: vertexRow){
+                if(eachCell == 1){
+                    degree++;
+                }
             }
+        } else {
+            for (int[] eachRow : adjacencyMatrix) {
+                if (eachRow[v] == 1) {
+                    degree++;
+                }
+            }
+
         }
         return degree;
     }
@@ -286,6 +299,7 @@ public class Graph {
     public static void main(final String[] args) {
 
         Graph graph1 = new Graph(5);
+        graph1.setDirection(true);
         graph1.addEdge(0,1);
         graph1.addEdge(0,3);
         graph1.addEdge(0,4);
@@ -302,6 +316,7 @@ public class Graph {
         graph1.addEdge(4,3);
 
         System.out.println(graph1);
+        System.out.println(graph1.inDegree(1));
 
 
         Graph graph2 = new Graph(4);
