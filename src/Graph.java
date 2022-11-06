@@ -5,18 +5,13 @@
  * @student_number: A01247718
  * @date: November 4th 2022
  * @version: 1.0
- *
- * @description:
- *
- * Lab 7 involves creating an adjacency matrix based on a corresponding graph where the numerical value of 1
+ * @description: Lab 7 involves creating an adjacency matrix based on a corresponding graph where the numerical value of 1
  * represents an edge in the graph. The file contains methods for a Depth first search(DFS) and Breadth first search(BFS)
  * algorithms to find the correct corresponding path. Graphs have the option to be direction or not which will
  * impact the given functions for inDegree and outDegree which measure the amount of incoming edges and outgoing edges.
- *
  */
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Graph {
 
@@ -60,9 +55,11 @@ public class Graph {
 
         if (!directed) {
             adjacencyMatrix[u][v] = 1;
-        }
+            adjacencyMatrix[v][u] = 1;
+        } else {
+            adjacencyMatrix[u][v] = 1;
 
-        adjacencyMatrix[v][u] = 1;
+        }
     }
 
     /**
@@ -137,21 +134,14 @@ public class Graph {
     int inDegree(int v) {
         int degree = 0;
 
-        if(directed){
-            int[] vertexRow = adjacencyMatrix[v];
-
-            for(int eachCell: vertexRow){
-                if(eachCell == 1){
+        if (directed) {
+            for (int[] vertexRow : adjacencyMatrix) {
+                if (vertexRow[v] == 1) {
                     degree++;
                 }
             }
         } else {
-            for (int[] eachRow : adjacencyMatrix) {
-                if (eachRow[v] == 1) {
-                    degree++;
-                }
-            }
-
+            degree = -1; // must be directed for in degree to work.
         }
         return degree;
     }
@@ -165,10 +155,14 @@ public class Graph {
     int outDegree(int v) {
         int outDegree = 0;
 
-        for (int each : adjacencyMatrix[v]) {
-            if (each == 1) {
-                outDegree++;
+        if(directed){
+            for (int each : adjacencyMatrix[v]) {
+                if (each == 1) {
+                    outDegree++;
+                }
             }
+        } else {
+            outDegree = -1; // must be directed for out degree to work.
         }
         return outDegree;
     }
@@ -235,8 +229,6 @@ public class Graph {
         while (visited != startingVertexIndex) {
             visited = traverseNodes(startingVertexIndex, visitedNodes);
         }
-        System.out.println(visitedNodes);
-
     }
 
 
@@ -246,12 +238,12 @@ public class Graph {
      * and when all the neighbours have been visited moves to the first neighbour from the stack until the traversal
      * is complete.
      */
-    public void BFS(){
+    public void BFS() {
         int startingVertexIndex = 0;
         int visited = -1;
 
         ArrayList<Integer> visitedNodes = new ArrayList<>();
-        ArrayList<Integer> stack        = new ArrayList<>();
+        ArrayList<Integer> stack = new ArrayList<>();
         visitedNodes.add(startingVertexIndex);
 
         while (visited != startingVertexIndex) {
@@ -279,70 +271,134 @@ public class Graph {
             return vertex;
         }
 
-        for(int i = 0; i < adjacencyMatrix.length; i++){
-            if(adjacencyMatrix[vertex][i] == 1){
+        for (int i = 0; i < adjacencyMatrix.length; i++) {
+            if (adjacencyMatrix[vertex][i] == 1) {
                 visitedNodes.add(i);
             }
         }
 
-        if(!stack.contains(vertex)) {
+        if (!stack.contains(vertex)) {
             stack.add(vertex);
-            System.out.println("Visiting: " + stack.get(stack.size()-1));
+            System.out.println("BFS Visiting: " + stack.get(stack.size() - 1));
 
         }
         visitedNodes.remove(0);
         vertex = visitedNodes.get(0);
 
-        return traverseNodesBFS(vertex,visitedNodes,stack);
+        return traverseNodesBFS(vertex, visitedNodes, stack);
     }
 
     public static void main(final String[] args) {
 
         Graph graph1 = new Graph(5);
+        System.out.println("----------Graph 1----------");
         graph1.setDirection(true);
-        graph1.addEdge(0,1);
-        graph1.addEdge(0,3);
-        graph1.addEdge(0,4);
-        graph1.addEdge(1,0);
-        graph1.addEdge(1,2);
-        graph1.addEdge(1,4);
-        graph1.addEdge(2,1);
-        graph1.addEdge(2,3);
-        graph1.addEdge(3,0);
-        graph1.addEdge(3,2);
-        graph1.addEdge(3,4);
-        graph1.addEdge(4,0);
-        graph1.addEdge(4,1);
-        graph1.addEdge(4,3);
+        graph1.addEdge(0, 1);
+        graph1.addEdge(0, 3);
+        graph1.addEdge(0, 4);
+        graph1.addEdge(1, 0);
+        graph1.addEdge(1, 2);
+        graph1.addEdge(1, 4);
+        graph1.addEdge(2, 1);
+        graph1.addEdge(2, 3);
+        graph1.addEdge(3, 0);
+        graph1.addEdge(3, 2);
+        graph1.addEdge(3, 4);
+        graph1.addEdge(4, 0);
+        graph1.addEdge(4, 1);
+        graph1.addEdge(4, 3);
 
         System.out.println(graph1);
-        System.out.println(graph1.inDegree(1));
+        System.out.println("Degree for vertex 1: " + graph1.degree(1));
+        System.out.println("Degree for vertex 3: " + graph1.degree(3));
 
+        System.out.println("----------Graph 2----------");
 
         Graph graph2 = new Graph(4);
-        graph2.addEdge(0,1);
-        graph2.addEdge(1,0);
-        graph2.addEdge(1,2);
-        graph2.addEdge(2,1);
-        graph2.addEdge(2,3);
-        graph2.addEdge(3,2);
+        graph2.addEdge(0, 1);
+        graph2.addEdge(1, 0);
+        graph2.addEdge(1, 2);
+        graph2.addEdge(2, 1);
+        graph2.addEdge(2, 3);
+        graph2.addEdge(3, 2);
 
         System.out.println(graph2);
 
+        System.out.println("Degree for vertex 1: " + graph2.degree(1));
+        System.out.println("Degree for vertex 2: " + graph2.degree(2));
+        System.out.println("In degree on bi-directional graph: " + graph2.inDegree(1));
+        System.out.println("Out degree on bi-directional graph: " + graph2.outDegree(2));
+
+        System.out.println("----------Graph 3----------");
+
         Graph graph3 = new Graph(6);
-        graph3.addEdge(0,2);
-        graph3.addEdge(0,4);
-        graph3.addEdge(1,3);
-        graph3.addEdge(1,5);
-        graph3.addEdge(2,0);
-        graph3.addEdge(2,4);
-        graph3.addEdge(3,1);
-        graph3.addEdge(3,5);
-        graph3.addEdge(4,0);
-        graph3.addEdge(4,2);
-        graph3.addEdge(5,1);
-        graph3.addEdge(5,3);
+        graph3.addEdge(0, 2);
+        graph3.addEdge(0, 4);
+        graph3.addEdge(1, 3);
+        graph3.addEdge(1, 5);
+        graph3.addEdge(2, 0);
+        graph3.addEdge(2, 4);
+        graph3.addEdge(3, 1);
+        graph3.addEdge(3, 5);
+        graph3.addEdge(4, 0);
+        graph3.addEdge(4, 2);
+        graph3.addEdge(5, 1);
+        graph3.addEdge(5, 3);
 
         System.out.println(graph3);
+
+        System.out.println("Degree for vertex 4: " + graph3.degree(4));
+        System.out.println("Degree for vertex 5: " + graph3.degree(5));
+
+        System.out.println("----------Part 4: Directed Graph----------");
+
+        Graph graph4 = new Graph(5);
+        graph4.setDirection(true);
+
+        graph4.addEdge(0, 0);
+        graph4.addEdge(0, 4);
+        graph4.addEdge(1, 2);
+        graph4.addEdge(1, 4);
+        graph4.addEdge(2, 0);
+        graph4.addEdge(2, 3);
+        graph4.addEdge(3, 1);
+        graph4.addEdge(3, 2);
+        graph4.addEdge(4, 3);
+
+        System.out.println(graph4);
+        System.out.println("In Degree V:0 = " + graph4.inDegree(0));
+        System.out.println("In Degree V:3 = " + graph4.inDegree(3));
+        System.out.println("In Degree V:1 = " + graph4.inDegree(1));
+        System.out.println("Out Degree V:2 = " + graph4.outDegree(2));
+        System.out.println("Out Degree V:3 = " + graph4.outDegree(3));
+        System.out.println("Out Degree V:4 = " + graph4.outDegree(4)+"\n");
+
+
+        System.out.println("----------Part 5: Another Sample----------");
+
+        Graph G = new Graph(8);
+
+        G.addEdge(0, 1); //ab
+        G.addEdge(0, 4); //ae
+        G.addEdge(0, 5); //af
+        G.addEdge(1, 5); //bf
+        G.addEdge(1, 6); //bg
+        G.addEdge(2, 3); //cd
+        G.addEdge(2, 6); //cg
+        G.addEdge(3, 7); //dh
+        G.addEdge(4, 5); //ef
+        G.addEdge(6, 7); //gh
+
+        System.out.println(G);
+        System.out.println("In degree on bi-directional graph: " + G.inDegree(1));
+        System.out.println("Out degree on bi-directional graph: " + G.outDegree(1));
+
+        System.out.println("DFS Traversal of Graph in Part 5.\n");
+        G.DFS();
+        System.out.println("----------Part 6: BFS Traversal of Graph-----------\n");
+        G.BFS();
+
+
+
     }
 }
