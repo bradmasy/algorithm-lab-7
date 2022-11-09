@@ -17,6 +17,7 @@ public class Graph {
 
     int[][] adjacencyMatrix;
     boolean directed;
+    ArrayList<String> verticesLabels;
 
     /**
      * Graph constructor.
@@ -43,22 +44,40 @@ public class Graph {
         this.directed = directed;
     }
 
-    ;
+    public Graph(final ArrayList<String> vertices){
+        verticesLabels = vertices;
+        // create a new matrix based on the size of vertices passed;
+        adjacencyMatrix = new int[verticesLabels.size()][verticesLabels.size()];
+        directed = false;
+    }
 
-    /**
-     * Adds an edge to the graph object from a given vertex.
-     *
-     * @param u a vertex where the edge is originating from.
-     * @param v the end location of the edge, the vertex being attached to.
-     */
-    public void addEdge(final int u, final int v) {
+//    /**
+//     * Adds an edge to the graph object from a given vertex.
+//     *
+//     * @param u a vertex where the edge is originating from.
+//     * @param v the end location of the edge, the vertex being attached to.
+//     */
+//    public void addEdge(final int u, final int v) {
+//
+//        if (!directed) {
+//            adjacencyMatrix[u][v] = 1;
+//            adjacencyMatrix[v][u] = 1;
+//        } else {
+//            adjacencyMatrix[u][v] = 1;
+//        }
+//    }
 
-        if (!directed) {
-            adjacencyMatrix[u][v] = 1;
-            adjacencyMatrix[v][u] = 1;
+    public void addEdge(final String a, final String b){
+
+        // get the location in the labels
+        int aIndex = verticesLabels.indexOf(a);
+        int bIndex = verticesLabels.indexOf(b);
+
+        if(!directed){
+            adjacencyMatrix[aIndex][bIndex] = 1;
+            adjacencyMatrix[bIndex][aIndex] = 1;
         } else {
-            adjacencyMatrix[u][v] = 1;
-
+            adjacencyMatrix[aIndex][bIndex] = 1;
         }
     }
 
@@ -106,16 +125,20 @@ public class Graph {
     @Override
     public String toString() {
         StringBuilder data = new StringBuilder();
-        data.append("  ");
+        data.append("    ");
 
         for (int i = 0; i < adjacencyMatrix.length; i++) {
-            data.append(i).append(" ");
+            data.append(verticesLabels.get(i)).append(" ");
+        }
+        data.append("\n");
+        for(int y = 0; y < adjacencyMatrix.length;y++){
+            data.append("---");
         }
         data.append("\n");
 
         int count = 0;
         for (int[] matrix : adjacencyMatrix) {
-            data.append(count).append(" ");
+            data.append(verticesLabels.get(count)).append(" |").append(" ");
             for (int i : matrix) {
                 data.append(i).append(" ");
             }
@@ -174,11 +197,11 @@ public class Graph {
      * @param visitedNodes the list of visited nodes.
      * @return the next vertex to traverse to.
      */
-    public int traverseNodes(int vertex, ArrayList<Integer> visitedNodes) {
+    public int traverseNodes(int vertex, ArrayList<String> visitedNodes) {
         int tempVertex;
 
         if (this.adjacencyMatrix.length == 1) {
-            visitedNodes.add(vertex);
+            visitedNodes.add(verticesLabels.get(vertex));
             return vertex;
         }
 
@@ -190,12 +213,12 @@ public class Graph {
         for (int i = 0; i < adjacencyMatrix[vertex].length; i++) {
             if (adjacencyMatrix[vertex][i] == 1) {
                 tempVertex = i;
-                if (!visitedNodes.contains(tempVertex)) {
+                if (!visitedNodes.contains(verticesLabels.get(tempVertex))) {
 
-                    if (!visitedNodes.contains(vertex)) {
-                        System.out.println("Visiting Vertex: " + vertex);
+                    if (!visitedNodes.contains(verticesLabels.get(vertex))) {
+                        System.out.println("Visiting Vertex: " + verticesLabels.get(vertex));
 
-                        visitedNodes.add(vertex);
+                        visitedNodes.add(verticesLabels.get(vertex));
                     }
                     vertex = tempVertex;
                     break;
@@ -203,12 +226,10 @@ public class Graph {
             } else {
                 // this constitutes there are no more options.
                 if (i == adjacencyMatrix[vertex].length - 1) {
-                    if (!visitedNodes.contains(vertex)) {
-                        System.out.println("Visiting Vertex: " + vertex);
-                        visitedNodes.add(vertex);
+                    if (!visitedNodes.contains(verticesLabels.get(vertex))){
+                        visitedNodes.add(verticesLabels.get(vertex));
                     }
-
-                    vertex = visitedNodes.get(visitedNodes.indexOf(vertex) - 1);
+                    vertex = visitedNodes.indexOf((visitedNodes.get(vertex - 1))) ;
                 }
             }
         }
@@ -224,11 +245,12 @@ public class Graph {
         int startingVertexIndex = 0;
         int visited = -1;
 
-        ArrayList<Integer> visitedNodes = new ArrayList<>();
+        ArrayList<String> visitedVertices = new ArrayList<>();
 
         while (visited != startingVertexIndex) {
-            visited = traverseNodes(startingVertexIndex, visitedNodes);
+            visited = traverseNodes(startingVertexIndex, visitedVertices);
         }
+        System.out.println(visitedVertices);
     }
 
 
@@ -242,13 +264,17 @@ public class Graph {
         int startingVertexIndex = 0;
         int visited = -1;
 
-        ArrayList<Integer> visitedNodes = new ArrayList<>();
-        ArrayList<Integer> stack = new ArrayList<>();
-        visitedNodes.add(startingVertexIndex);
+       // ArrayList<Integer> visitedNodes = new ArrayList<>();
+        ArrayList<String> visitedVertices = new ArrayList<>();
+
+
+        ArrayList<String> stack = new ArrayList<>();
+        visitedVertices.add(verticesLabels.get(startingVertexIndex));
 
         while (visited != startingVertexIndex) {
-            visited = traverseNodesBFS(startingVertexIndex, visitedNodes, stack);
+            visited = traverseNodesBFS(startingVertexIndex, visitedVertices, stack);
         }
+        System.out.println(stack);
     }
 
     /**
@@ -260,10 +286,10 @@ public class Graph {
      * @param stack a list of all the vertexes previously visited.
      * @return the next vertex to traverse to.
      */
-    private int traverseNodesBFS(int vertex, ArrayList<Integer> visitedNodes, ArrayList<Integer> stack) {
+    private int traverseNodesBFS(int vertex, ArrayList<String> visitedNodes, ArrayList<String> stack) {
 
         if (this.adjacencyMatrix.length == 1) {
-            visitedNodes.add(vertex);
+            visitedNodes.add(verticesLabels.get(vertex));
             return vertex;
         }
 
@@ -273,132 +299,18 @@ public class Graph {
 
         for (int i = 0; i < adjacencyMatrix.length; i++) {
             if (adjacencyMatrix[vertex][i] == 1) {
-                visitedNodes.add(i);
+                visitedNodes.add(verticesLabels.get(i));
             }
         }
 
-        if (!stack.contains(vertex)) {
-            stack.add(vertex);
-            System.out.println("BFS Visiting: " + stack.get(stack.size() - 1));
+        if (!stack.contains(verticesLabels.get(vertex))) {
+            stack.add(verticesLabels.get(vertex));
+           // System.out.println("BFS Visiting: " + stack.get(stack.size() - 1));
 
         }
         visitedNodes.remove(0);
-        vertex = visitedNodes.get(0);
+        vertex = verticesLabels.indexOf(visitedNodes.get(0));//visitedNodes.get(0);
 
         return traverseNodesBFS(vertex, visitedNodes, stack);
-    }
-
-    public static void main(final String[] args) {
-
-        Graph graph1 = new Graph(5);
-        System.out.println("----------Graph 1----------");
-        graph1.setDirection(true);
-        graph1.addEdge(0, 1);
-        graph1.addEdge(0, 3);
-        graph1.addEdge(0, 4);
-        graph1.addEdge(1, 0);
-        graph1.addEdge(1, 2);
-        graph1.addEdge(1, 4);
-        graph1.addEdge(2, 1);
-        graph1.addEdge(2, 3);
-        graph1.addEdge(3, 0);
-        graph1.addEdge(3, 2);
-        graph1.addEdge(3, 4);
-        graph1.addEdge(4, 0);
-        graph1.addEdge(4, 1);
-        graph1.addEdge(4, 3);
-
-        System.out.println(graph1);
-        System.out.println("Degree for vertex 1: " + graph1.degree(1));
-        System.out.println("Degree for vertex 3: " + graph1.degree(3));
-
-        System.out.println("----------Graph 2----------");
-
-        Graph graph2 = new Graph(4);
-        graph2.addEdge(0, 1);
-        graph2.addEdge(1, 0);
-        graph2.addEdge(1, 2);
-        graph2.addEdge(2, 1);
-        graph2.addEdge(2, 3);
-        graph2.addEdge(3, 2);
-
-        System.out.println(graph2);
-
-        System.out.println("Degree for vertex 1: " + graph2.degree(1));
-        System.out.println("Degree for vertex 2: " + graph2.degree(2));
-        System.out.println("In degree on bi-directional graph: " + graph2.inDegree(1));
-        System.out.println("Out degree on bi-directional graph: " + graph2.outDegree(2));
-
-        System.out.println("----------Graph 3----------");
-
-        Graph graph3 = new Graph(6);
-        graph3.addEdge(0, 2);
-        graph3.addEdge(0, 4);
-        graph3.addEdge(1, 3);
-        graph3.addEdge(1, 5);
-        graph3.addEdge(2, 0);
-        graph3.addEdge(2, 4);
-        graph3.addEdge(3, 1);
-        graph3.addEdge(3, 5);
-        graph3.addEdge(4, 0);
-        graph3.addEdge(4, 2);
-        graph3.addEdge(5, 1);
-        graph3.addEdge(5, 3);
-
-        System.out.println(graph3);
-
-        System.out.println("Degree for vertex 4: " + graph3.degree(4));
-        System.out.println("Degree for vertex 5: " + graph3.degree(5));
-
-        System.out.println("----------Part 4: Directed Graph----------");
-
-        Graph graph4 = new Graph(5);
-        graph4.setDirection(true);
-
-        graph4.addEdge(0, 0);
-        graph4.addEdge(0, 4);
-        graph4.addEdge(1, 2);
-        graph4.addEdge(1, 4);
-        graph4.addEdge(2, 0);
-        graph4.addEdge(2, 3);
-        graph4.addEdge(3, 1);
-        graph4.addEdge(3, 2);
-        graph4.addEdge(4, 3);
-
-        System.out.println(graph4);
-        System.out.println("In Degree V:0 = " + graph4.inDegree(0));
-        System.out.println("In Degree V:3 = " + graph4.inDegree(3));
-        System.out.println("In Degree V:1 = " + graph4.inDegree(1));
-        System.out.println("Out Degree V:2 = " + graph4.outDegree(2));
-        System.out.println("Out Degree V:3 = " + graph4.outDegree(3));
-        System.out.println("Out Degree V:4 = " + graph4.outDegree(4)+"\n");
-
-
-        System.out.println("----------Part 5: Another Sample----------");
-
-        Graph G = new Graph(8);
-
-        G.addEdge(0, 1); //ab
-        G.addEdge(0, 4); //ae
-        G.addEdge(0, 5); //af
-        G.addEdge(1, 5); //bf
-        G.addEdge(1, 6); //bg
-        G.addEdge(2, 3); //cd
-        G.addEdge(2, 6); //cg
-        G.addEdge(3, 7); //dh
-        G.addEdge(4, 5); //ef
-        G.addEdge(6, 7); //gh
-
-        System.out.println(G);
-        System.out.println("In degree on bi-directional graph: " + G.inDegree(1));
-        System.out.println("Out degree on bi-directional graph: " + G.outDegree(1));
-
-        System.out.println("DFS Traversal of Graph in Part 5.\n");
-        G.DFS();
-        System.out.println("----------Part 6: BFS Traversal of Graph-----------\n");
-        G.BFS();
-
-
-
     }
 }
